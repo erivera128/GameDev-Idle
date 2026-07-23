@@ -22,6 +22,8 @@ services:
       REDIS_URL: redis://redis:6379
       JWT_SECRET: development-secret-change-me
       COOKIE_SECURE: "false"
+      CONTENT_API_KEY: local-content-key
+      GAME_SERVER_KEY: local-game-key
     ports:
       - "3001:3001"
     depends_on:
