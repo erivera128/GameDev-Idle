@@ -2,6 +2,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import type { InventoryItem, ItemRarity } from '@gamedev-idle/contracts';
 import { InfrastructureService } from '../infrastructure/infrastructure.service';
 import { InventoryMutationDto } from './dto/inventory-mutation.dto';
+import { SellItemDto } from './dto/sell-item.dto';
 
 type InventoryRow = { id: string; slug: string; name: string; description: string; category: string; rarity: ItemRarity; base_sell_value: number; stack_limit: number; tradable: boolean; quantity: number; locked_quantity: number };
 
@@ -26,5 +27,19 @@ export class InventoryService {
     const row = result.rows[0]; if (!row) throw new BadRequestException('Not enough unlocked items are available.');
     if (row.quantity === 0) await this.infrastructure.query('DELETE FROM inventory WHERE user_id = $1 AND item_id = $2 AND quantity = 0', [input.userId, row.item_id]);
     return { quantity: row.quantity };
+  }
+  async sell(userId: string, input: SellItemDto) {
+    return this.infrastructure.transaction(async (client) => {
+      const result = await client.query<InventoryRow>('SELECT i.id, i.slug, i.name, i.description, i.category, i.rarity, i.base_sell_value, i.stack_limit, i.tradable, v.quantity, v.locked_quantity FROM inventory v JOIN items i ON i.id = v.item_id WHERE v.user_id = $1 AND (i.id::text = $2 OR i.slug = $2) FOR UPDATE', [userId, input.itemIdOrSlug]);
+      const item = result.rows[0];
+      if (!item || item.quantity - item.locked_quantity < input.quantity) throw new BadRequestException('Not enough unlocked items are available.');
+      if (!item.tradable) throw new BadRequestException('This item cannot be sold.');
+      const remaining = item.quantity - input.quantity; const cashAwarded = item.base_sell_value * input.quantity;
+      if (remaining === 0) await client.query('DELETE FROM inventory WHERE user_id = $1 AND item_id = $2', [userId, item.id]);
+      else await client.query('UPDATE inventory SET quantity = $3, updated_at = NOW() WHERE user_id = $1 AND item_id = $2', [userId, item.id, remaining]);
+      await client.query('INSERT INTO player_currencies (user_id) VALUES ($1) ON CONFLICT (user_id) DO NOTHING', [userId]);
+      await client.query('UPDATE player_currencies SET cash = cash + $2, updated_at = NOW() WHERE user_id = $1', [userId, cashAwarded]);
+      return { item: this.item(item), quantitySold: input.quantity, remainingQuantity: remaining, cashAwarded };
+    });
   }
 }

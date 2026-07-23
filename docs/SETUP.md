@@ -15,6 +15,8 @@
 
 The web app is available at `http://localhost:3000`. The API health endpoint is `http://localhost:3001/health`; it returns 200 only when PostgreSQL and Redis are reachable.
 
+Player progress is stored in PostgreSQL. Restarting the web, API, or worker containers does not reset accounts, inventories, currencies, action cooldowns, or reward history. To intentionally reset local progress, run `docker compose down -v`.
+
 To run the complete containerized stack, use `docker compose up --build`.
 
 ## Foundation conventions

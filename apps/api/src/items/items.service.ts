@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, OnModuleInit } from '@nestjs/common';
 import type { GameItem, ItemRarity } from '@gamedev-idle/contracts';
 import { InfrastructureService } from '../infrastructure/infrastructure.service';
 import { CreateItemDto } from './dto/create-item.dto';
@@ -15,9 +15,10 @@ const starterCatalog: CreateItemDto[] = [
 ];
 
 @Injectable()
-export class ItemsService {
+export class ItemsService implements OnModuleInit {
   constructor(private readonly infrastructure: InfrastructureService) {}
   private item(row: ItemRow): GameItem { return { id: row.id, slug: row.slug, name: row.name, description: row.description, category: row.category, rarity: row.rarity, baseSellValue: row.base_sell_value, stackLimit: row.stack_limit, tradable: row.tradable }; }
+  async onModuleInit() { await this.seed(); }
   async seed() { for (const item of starterCatalog) await this.infrastructure.query('INSERT INTO items (slug, name, description, category, rarity, base_sell_value, stack_limit, tradable) VALUES ($1,$2,$3,$4,$5,$6,$7,$8) ON CONFLICT (slug) DO NOTHING', [item.slug, item.name, item.description, item.category, item.rarity, item.baseSellValue, item.stackLimit, item.tradable ?? true]); }
   async list(category?: string, rarity?: ItemRarity) { await this.seed(); const conditions: string[] = []; const values: string[] = []; if (category) { values.push(category); conditions.push(`category = $${values.length}`); } if (rarity) { values.push(rarity); conditions.push(`rarity = $${values.length}`); } const result = await this.infrastructure.query<ItemRow>(`SELECT id, slug, name, description, category, rarity, base_sell_value, stack_limit, tradable FROM items ${conditions.length ? `WHERE ${conditions.join(' AND ')}` : ''} ORDER BY base_sell_value, name`, values); return result.rows.map((row) => this.item(row)); }
   async get(idOrSlug: string) { const result = await this.infrastructure.query<ItemRow>('SELECT id, slug, name, description, category, rarity, base_sell_value, stack_limit, tradable FROM items WHERE id::text = $1 OR slug = $1', [idOrSlug]); if (!result.rows[0]) throw new NotFoundException('Item not found.'); return this.item(result.rows[0]); }

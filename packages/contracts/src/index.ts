@@ -22,3 +22,32 @@ export interface InventoryItem extends GameItem {
   quantity: number;
   lockedQuantity: number;
 }
+
+export interface CurrencyBalance {
+  cash: number;
+  fans: number;
+  reputation: number;
+}
+
+export interface RecentLoot {
+  itemName: string;
+  quantity: number;
+  cashAwarded: number;
+  fansAwarded: number;
+  occurredAt: string;
+}
+
+export interface PlayerDashboard {
+  player: { id: string; username: string; email: string };
+  currencies: CurrencyBalance;
+  inventoryStacks: number;
+  inventoryItems: number;
+  recentLoot: RecentLoot[];
+}
+
+export interface RecipeIngredient { itemSlug: string; itemName: string; quantity: number; }
+export interface Recipe { id: string; slug: string; name: string; description: string; durationSeconds: number; output: { itemSlug: string; itemName: string; quantity: number }; ingredients: RecipeIngredient[]; }
+export interface CraftingJob { id: string; recipeName: string; status: 'crafting' | 'completed'; completesAt: string; outputItemName: string; outputQuantity: number; }
+
+export interface ExplorationLocation { id: string; slug: string; name: string; description: string; durationSeconds: number; reward: { itemSlug: string; itemName: string; minQuantity: number; maxQuantity: number }; }
+export interface Expedition { id: string; locationName: string; status: 'exploring' | 'completed'; completesAt: string; rewardItemName: string; rewardQuantity: number | null; }

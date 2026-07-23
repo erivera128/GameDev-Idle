@@ -8,6 +8,7 @@
     "build": "pnpm -r build",
     "lint": "pnpm -r lint",
     "test": "pnpm -r test",
+    "balance:simulate": "pnpm --filter @gamedev-idle/worker exec tsx ../../scripts/simulate-balance.ts",
     "format": "prettier --write .",
     "format:check": "prettier --check ."
   },
@@ -15,4 +16,3 @@
     "prettier": "^3.5.3"
   }
 }
-
