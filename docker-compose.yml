@@ -20,6 +20,8 @@ services:
       API_PORT: 3001
       DATABASE_URL: postgresql://gamedev_idle:change-me-before-deploying@postgres:5432/gamedev_idle
       REDIS_URL: redis://redis:6379
+      JWT_SECRET: development-secret-change-me
+      COOKIE_SECURE: "false"
     ports:
       - "3001:3001"
     depends_on:
@@ -78,4 +80,3 @@ services:
 volumes:
   postgres_data:
   redis_data:
-
