@@ -22,3 +22,9 @@ Goals:
 - Thousands of items
 - Long-term progression
 - Community driven
+
+## Development
+
+The Foundation scaffold includes a Next.js web app, NestJS API, BullMQ worker, PostgreSQL, Redis, shared contracts, and Docker Compose.
+
+See [local setup instructions](docs/SETUP.md).
