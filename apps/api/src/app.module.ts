@@ -17,5 +17,13 @@ import { CraftingController } from './crafting/crafting.controller';
 import { CraftingService } from './crafting/crafting.service';
 import { ExplorationController } from './exploration/exploration.controller';
 import { ExplorationService } from './exploration/exploration.service';
-@Module({ controllers: [HealthController, AuthController, ItemsController, InventoryController, CurrenciesController, GatheringController, DashboardController, CraftingController, ExplorationController], providers: [InfrastructureService, AuthService, ItemsService, InventoryService, CurrenciesService, GatheringService, DashboardService, CraftingService, ExplorationService] })
+import { QuestsController } from './quests/quests.controller';
+import { QuestsService } from './quests/quests.service';
+import { StudioController } from './studio/studio.controller';
+import { StudioService } from './studio/studio.service';
+import { MarketController } from './market/market.controller';
+import { MarketService } from './market/market.service';
+import { ProjectsController } from './projects/projects.controller';
+import { ProjectsService } from './projects/projects.service';
+@Module({ controllers: [HealthController, AuthController, ItemsController, InventoryController, CurrenciesController, GatheringController, DashboardController, CraftingController, ExplorationController, QuestsController, StudioController, MarketController, ProjectsController], providers: [InfrastructureService, AuthService, ItemsService, InventoryService, CurrenciesService, GatheringService, DashboardService, CraftingService, ExplorationService, QuestsService, StudioService, MarketService, ProjectsService] })
 export class AppModule {}

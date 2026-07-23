@@ -2,9 +2,10 @@
 
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
+import { Countdown } from '../countdown';
 
 type Recipe = { slug: string; name: string; description: string; durationSeconds: number; output: { itemName: string; quantity: number }; ingredients: { itemName: string; quantity: number }[] };
-type Job = { id: string; recipeName: string; status: string; completesAt: string; outputItemName: string; outputQuantity: number };
+type Job = { id: string; recipeName: string; status: string; completesAt: string; durationSeconds: number; outputItemName: string; outputQuantity: number };
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001';
 
@@ -62,7 +63,7 @@ export default function CraftingPage() {
       <span>{job.recipeName} &rarr; {job.outputQuantity} {job.outputItemName}</span>
       {job.status === 'crafting' && new Date(job.completesAt).getTime() <= now
         ? <button onClick={() => claim(job.id)}>Claim</button>
-        : <small>{job.status === 'completed' ? 'Claimed' : `Ready ${new Date(job.completesAt).toLocaleTimeString()}`}</small>}
+        : job.status === 'completed' ? <small>Claimed</small> : <Countdown completesAt={job.completesAt} durationSeconds={job.durationSeconds} />}
     </article>) : <p>No active crafts.</p>}</section>
   </main>;
 }

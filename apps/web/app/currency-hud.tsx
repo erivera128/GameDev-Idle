@@ -1,0 +1,4 @@
+'use client';
+import { usePathname } from 'next/navigation'; import { useEffect, useState } from 'react';
+const api=process.env.NEXT_PUBLIC_API_URL??'http://localhost:3001'; type Balance={cash:number;fans:number;reputation:number};
+export function CurrencyHud(){const path=usePathname();const [balance,setBalance]=useState<Balance>();useEffect(()=>{const token=sessionStorage.getItem('accessToken');if(!token){setBalance(undefined);return;}fetch(`${api}/currencies`,{headers:{Authorization:`Bearer ${token}`}}).then(r=>r.ok?r.json():undefined).then(setBalance).catch(()=>setBalance(undefined));},[path]);if(!balance)return null;return <aside className="persistent-currency" aria-label="Your currencies"><span>Cash <b>{balance.cash}</b></span><span>Fans <b>{balance.fans}</b></span><span>Rep <b>{balance.reputation}</b></span></aside>;}

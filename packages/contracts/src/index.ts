@@ -47,7 +47,9 @@ export interface PlayerDashboard {
 
 export interface RecipeIngredient { itemSlug: string; itemName: string; quantity: number; }
 export interface Recipe { id: string; slug: string; name: string; description: string; durationSeconds: number; output: { itemSlug: string; itemName: string; quantity: number }; ingredients: RecipeIngredient[]; }
-export interface CraftingJob { id: string; recipeName: string; status: 'crafting' | 'completed'; completesAt: string; outputItemName: string; outputQuantity: number; }
+export interface CraftingJob { id: string; recipeName: string; status: 'crafting' | 'completed'; completesAt: string; durationSeconds: number; outputItemName: string; outputQuantity: number; }
 
 export interface ExplorationLocation { id: string; slug: string; name: string; description: string; durationSeconds: number; reward: { itemSlug: string; itemName: string; minQuantity: number; maxQuantity: number }; }
-export interface Expedition { id: string; locationName: string; status: 'exploring' | 'completed'; completesAt: string; rewardItemName: string; rewardQuantity: number | null; }
+export interface Expedition { id: string; locationName: string; status: 'exploring' | 'completed'; completesAt: string; durationSeconds: number; rewardItemName: string; rewardQuantity: number | null; }
+
+export interface Quest { slug: string; title: string; description: string; npcName: string; npcRole: string; requirement: { itemName: string; quantity: number }; rewards: { cash: number; fans: number; reputation: number }; status: 'available' | 'completed'; claimable: boolean; }

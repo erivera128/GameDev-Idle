@@ -1,12 +1,14 @@
 'use client';
 
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { FormEvent, useState } from 'react';
 
 type Mode = 'login' | 'register';
 const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001';
 
 export function AuthForm({ mode }: { mode: Mode }) {
+  const router = useRouter();
   const [error, setError] = useState<string>();
   const [message, setMessage] = useState<string>();
   const [submitting, setSubmitting] = useState(false);
@@ -20,7 +22,7 @@ export function AuthForm({ mode }: { mode: Mode }) {
       const result = await response.json();
       if (!response.ok) throw new Error(Array.isArray(result.message) ? result.message.join(' ') : result.message);
       sessionStorage.setItem('accessToken', result.accessToken);
-      setMessage(`Welcome, ${result.user.username}. Your session is ready.`);
+      router.replace('/dashboard');
     } catch (reason) { setError(reason instanceof Error ? reason.message : 'Unable to reach the game server.'); }
     finally { setSubmitting(false); }
   }

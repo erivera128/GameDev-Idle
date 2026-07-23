@@ -1,0 +1,3 @@
+import { Body, Controller, Get, Headers, HttpCode, Post } from '@nestjs/common'; import { IsInt, IsString, Matches, Min } from 'class-validator'; import { AuthService } from '../auth/auth.service'; import { MarketService } from './market.service';
+class BuyDto { @IsString() @Matches(/^[a-z0-9-]+$/) itemSlug!: string; @IsInt() @Min(1) quantity!: number; }
+@Controller('market') export class MarketController { constructor(private readonly auth: AuthService, private readonly market: MarketService) {} @Get('offers') offers(){return this.market.offers();} @HttpCode(200) @Post('buy') async buy(@Headers('authorization') a:string|undefined,@Body() i:BuyDto){const u=await this.auth.me(a?.replace(/^Bearer\s+/i,''));return this.market.buy(u.id,i.itemSlug,i.quantity);} }
